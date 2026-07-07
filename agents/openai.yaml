@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Guide"
+  short_description: "Universal execution protocol for coding agents"
+  default_prompt: "Use $agent-guide to follow the repository workflow before making changes."
