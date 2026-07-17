@@ -66,6 +66,29 @@ The single ordered list of work. Tasks are written out upfront, executed one at 
 - New tasks discovered mid-session: append to the bottom, do not interrupt the current task
 - Completed tasks: mark `[x]` and add the completion date inline
 
+Important — plan for the execution model
+
+- Always maintain `PLAN.md`: every planned task must be recorded there before execution begins.
+- The agent's execution model is intentionally simple ("dumb"). It follows `PLAN.md` entries literally — write tasks so the agent can understand and execute them reliably.
+- To make tasks actionable for the agent, include all of the following in each PLAN.md entry:
+  - A clear acceptance criterion describing what "done" looks like
+  - Step-by-step instructions the agent should perform (ordered list)
+  - Any required files, environment variables, commands, or inputs
+  - Expected outputs or checkpoints the agent can report back on
+- Tasks missing these details may be executed incorrectly or partially; prefer explicitness over brevity.
+
+Use this task template in `PLAN.md` for agent-targeted tasks:
+
+```markdown
+- [ ] type(scope): short description
+  - acceptance: Describe what success looks like (pass/fail criteria)
+  - steps:
+    1. Do X (modify or create file path/to/file)
+    2. Run command(s) or check Y
+  - files: path/to/file1, path/to/file2
+  - env: ENV_VAR=placeholder
+```
+
 **Format:**
 ```markdown
 # PLAN.md
