@@ -1,6 +1,6 @@
 ---
 name: agent-guide
-version: 3.0.0
+version: 3.1.0
 description: >
   Universal execution protocol for AI agents on any frontend project.
   Activate at the start of every coding session — before writing or modifying
@@ -22,14 +22,15 @@ Every session starts here — no exceptions.
 
 1. Read `AGENTS.md` — conventions, architecture, decisions
 2. Read `PLAN.md` — find the next unchecked task
-3. State your planned actions out loud before touching any file
-4. Work through tasks one at a time; check each off when done
+3. Check `.agents/tasks/` for a log matching the current task; open it if it exists, create one if the task warrants it
+4. State your planned actions out loud before touching any file
+5. Work through tasks one at a time; check each off when done
 
 ---
 
 ## Project Documents
 
-Three files keep the project clean and ready for handover at any time. Create any that are missing before starting work.
+Four things keep the project clean and ready for handover at any time. Create any that are missing before starting work.
 
 ---
 
@@ -66,29 +67,6 @@ The single ordered list of work. Tasks are written out upfront, executed one at 
 - New tasks discovered mid-session: append to the bottom, do not interrupt the current task
 - Completed tasks: mark `[x]` and add the completion date inline
 
-Important — plan for the execution model
-
-- Always maintain `PLAN.md`: every planned task must be recorded there before execution begins.
-- The agent's execution model is intentionally simple ("dumb"). It follows `PLAN.md` entries literally — write tasks so the agent can understand and execute them reliably.
-- To make tasks actionable for the agent, include all of the following in each PLAN.md entry:
-  - A clear acceptance criterion describing what "done" looks like
-  - Step-by-step instructions the agent should perform (ordered list)
-  - Any required files, environment variables, commands, or inputs
-  - Expected outputs or checkpoints the agent can report back on
-- Tasks missing these details may be executed incorrectly or partially; prefer explicitness over brevity.
-
-Use this task template in `PLAN.md` for agent-targeted tasks:
-
-```markdown
-- [ ] type(scope): short description
-  - acceptance: Describe what success looks like (pass/fail criteria)
-  - steps:
-    1. Do X (modify or create file path/to/file)
-    2. Run command(s) or check Y
-  - files: path/to/file1, path/to/file2
-  - env: ENV_VAR=placeholder
-```
-
 **Format:**
 ```markdown
 # PLAN.md
@@ -115,6 +93,36 @@ Use this task template in `PLAN.md` for agent-targeted tasks:
 - Tasks use the same `type(scope): description` format as git commits
 - One task = one logical unit of work = one commit
 - Never batch unrelated work under a single task
+
+---
+
+### `.agents/tasks/<date>-<title>.md` — Task Log
+
+Working scratch space for a single task: findings, investigation notes, in-progress reasoning, the step-by-step plan. Not polished, not reviewed — a running record of what happened and why, kept separate from `PLAN.md` (what's left to do) and `AGENTS.md` (settled conventions and decisions).
+
+**How to use:**
+- Create one for any task involving investigation, a non-trivial plan, or likely to span multiple turns — skip it for trivial one-shot edits
+- Filename: `.agents/tasks/2025-01-15-jwt-refresh.md` (date + short slug)
+- Append as you go: findings, blockers hit, approaches tried and rejected (and why), decisions made
+- On completion: fold anything durable into `AGENTS.md` (decisions/conventions) or `PLAN.md` (status) — leave the log itself in place as history, don't delete it
+
+**Format:**
+```markdown
+# 2025-01-15 — JWT refresh on 401
+
+## Goal
+What this task is trying to achieve.
+
+## Findings
+Investigation notes, relevant code paths, constraints discovered.
+
+## Plan
+- [ ] step
+- [ ] step
+
+## Decisions
+Choices made mid-task and why, especially anything not obvious from the diff.
+```
 
 ---
 
@@ -165,29 +173,20 @@ All colors, spacing, and typography must use named variables. Never hardcode raw
 
 ---
 
-## Code Review Loop
+## Code Review
 
-Writing the code is not the end of the task — it's a draft. Run this loop before touching git or marking anything done in `PLAN.md`:
+Code is a draft until reviewed. Before committing or checking off a task, review the diff twice as a skeptical outside reviewer — not the author confirming their own work.
 
-1. **Re-read the diff fresh**, as an independent reviewer would, against these checks specifically:
-   - **Correctness** — does it actually do what the task asked, including edge cases (empty states, null/undefined, zero, off-by-one, race conditions)?
-   - **Requirement match** — re-read the original task; does the implementation satisfy all of it, not just the happy path?
-   - **Security** — input validation, injection risk, auth/permission checks, secrets not hardcoded or logged
-   - **Error handling** — failures surfaced, not swallowed; no unhandled promise rejections
-   - **Consistency** — matches existing patterns/conventions in `AGENTS.md` and the surrounding code, no stray style
-   - **Scope** — no unrelated changes crept in
-2. **Issue found** → fix it, then restart at step 1 with a fresh read.
-3. **No issue found** → run a second pass, actively trying to find something wrong rather than confirming the first pass was fine (assume there's a bug and hunt for it).
-4. **Second pass also clean** → proceed to Verification.
+**Check:** correctness (edge cases, nulls, races) · matches what the task actually asked, not just the happy path · security (input validation, secrets, auth) · error handling (nothing swallowed) · consistency with `AGENTS.md` · no scope creep.
 
-Two consecutive clean passes are required before code counts as reviewed. One clean pass is never sufficient.
+Find something → fix it → restart from pass one. Two consecutive clean passes required. The second pass actively hunts for a bug rather than confirming the first pass was fine.
 
 ## Verification
 
-- Run the test suite if it exists and is fast; at minimum run tests covering the changed code.
-- No tests exist → run the type-checker, linter, or build as a minimum bar.
-- Can't be automated (UI, config, manual flow) → describe the manual check actually performed, not just "looks fine."
-- Report explicitly what was verified and what wasn't — don't imply full coverage if it wasn't achieved.
+- Run tests covering the changed code (full suite if fast)
+- No tests → run type-checker, linter, or build as the minimum bar
+- Can't be automated (UI, config, manual flow) → describe the actual manual check performed, not "looks fine"
+- State plainly what was verified and what wasn't
 
 ---
 
@@ -223,7 +222,7 @@ git commit -m "<type>(<scope>): <what and why>"
 | `refactor` | Restructure, no behavior change |
 | `chore` | Tooling, config, dependencies |
 
-✅ `feat(auth): add JWT refresh on 401 response`  
+✅ `feat(auth): add JWT refresh on 401 response`
 ❌ `fix stuff` / `update` / `changes`
 
 If several completed tasks are sitting uncommitted when the user asks to commit, split them into separate commits (one task = one commit) rather than bundling.
@@ -235,6 +234,7 @@ If several completed tasks are sitting uncommitted when the user asks to commit,
 Before ending any session:
 
 - [ ] Current task checked off in `PLAN.md`
+- [ ] Task log in `.agents/tasks/` updated or closed out (durable bits folded into `AGENTS.md`/`PLAN.md`)
 - [ ] `git status` reviewed with the user; uncommitted changes are expected unless the user asked for a commit
 - [ ] `AGENTS.md` updated — new conventions, decisions, env vars, APIs, models
 - [ ] `README.md` updated — new scripts, env vars, setup changes
