@@ -1,6 +1,6 @@
 ---
 name: agent-guide
-version: 3.1.0
+version: 3.2.0
 description: >
   Universal execution protocol for AI agents on any frontend project.
   Activate at the start of every coding session — before writing or modifying
@@ -43,7 +43,7 @@ Everything an agent or developer needs to understand and work on this project.
 - **Project** — one-paragraph description of what it does and who it's for
 - **Stack** — framework, language, styling, state, build tool, package manager (with versions)
 - **Structure** — annotated folder tree
-- **Conventions** — naming, design tokens, component rules, state/API rules
+- **Conventions** — naming, component rules, state/API rules
 - **Environment** — table of all `.env` variables (key, purpose, required)
 - **Do Not** — explicit prohibitions; concrete, not vague
 - **Decisions** — date-stamped log of architectural choices and their reasoning
@@ -138,15 +138,6 @@ Enough for anyone to go from zero to running with no prior context.
 
 ## Code Standards
 
-### Design Tokens
-
-All colors, spacing, and typography must use named variables. Never hardcode raw values.
-
-```css
-/* ✅ */  color: var(--color-primary);
-/* ❌ */  color: #4f46e5;
-```
-
 ### Premium UI
 
 | Concern | Standard |
@@ -161,9 +152,8 @@ All colors, spacing, and typography must use named variables. Never hardcode raw
 
 1. **Single responsibility** — one job per component; pass callbacks as props
 2. **Reuse first** — check existing primitives before creating anything new
-3. **No magic values** — tokens, variables, or named constants only
-4. **Stateless display** — typed props; lift state up
-5. **Organized** — group by domain/feature; never dump into root
+3. **Stateless display** — typed props; lift state up
+4. **Organized** — group by domain/feature; never dump into root
 
 ### API & State
 
@@ -183,10 +173,12 @@ Find something → fix it → restart from pass one. Two consecutive clean passe
 
 ## Verification
 
-- Run tests covering the changed code (full suite if fast)
-- No tests → run type-checker, linter, or build as the minimum bar
+Verify lightly and deliberately — don't rerun the whole suite or rebuild repeatedly as a nervous habit; that's wasted time and wasted disk I/O for no extra confidence.
+
+- Run only the tests relevant to the changed code, once. Skip the full suite unless the task is broad enough to require it.
+- No relevant tests exist → a single type-check or lint pass is enough; don't add a build/run cycle on top unless something's actually in doubt.
 - Can't be automated (UI, config, manual flow) → describe the actual manual check performed, not "looks fine"
-- State plainly what was verified and what wasn't
+- State plainly what was verified and what wasn't — don't loop back to re-verify something already checked
 
 ---
 
