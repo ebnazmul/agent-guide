@@ -1,6 +1,6 @@
 ---
 name: agent-guide
-version: 3.2.0
+version: 3.3.0
 description: >
   Universal execution protocol for AI agents on any frontend project.
   Activate at the start of every coding session — before writing or modifying
@@ -196,9 +196,16 @@ Verify lightly and deliberately — don't rerun the whole suite or rebuild repea
 
 ## Git Protocol
 
-**Never commit automatically.** Work stays uncommitted until the user explicitly asks for a commit ("commit this", "commit and push", etc.). Finishing a task does not imply a commit.
+Commit when a task is genuinely done — not on every small edit, and not automatically just because code was written. "Really done" means all of the following hold:
 
-When the user does ask to commit:
+- The task's checklist item in `PLAN.md` is fully satisfied, not just the happy path
+- Code review has passed (two consecutive clean passes, see **Code Review** above)
+- Verification has been performed and stated, per **Verification** above
+- No console errors, type errors, or known loose ends left for "later in this task"
+
+If any of those isn't true yet, the task isn't done — keep working, don't commit partial or unverified work just to checkpoint progress.
+
+Once a task clears that bar, commit it right away rather than letting it pile up uncommitted:
 
 ```bash
 git add <specific-files>
@@ -214,10 +221,10 @@ git commit -m "<type>(<scope>): <what and why>"
 | `refactor` | Restructure, no behavior change |
 | `chore` | Tooling, config, dependencies |
 
-✅ `feat(auth): add JWT refresh on 401 response`
+✅ `feat(auth): add JWT refresh on 401 response`  
 ❌ `fix stuff` / `update` / `changes`
 
-If several completed tasks are sitting uncommitted when the user asks to commit, split them into separate commits (one task = one commit) rather than bundling.
+One task = one commit — never bundle unrelated work, and never split one logical task across multiple commits. If several completed tasks are somehow sitting uncommitted, commit each separately rather than bundling.
 
 ---
 
@@ -226,8 +233,8 @@ If several completed tasks are sitting uncommitted when the user asks to commit,
 Before ending any session:
 
 - [ ] Current task checked off in `PLAN.md`
+- [ ] Any task cleared for "really done" (review + verification passed) is committed; `git status` reflects only in-progress/unverified work
 - [ ] Task log in `.agents/tasks/` updated or closed out (durable bits folded into `AGENTS.md`/`PLAN.md`)
-- [ ] `git status` reviewed with the user; uncommitted changes are expected unless the user asked for a commit
 - [ ] `AGENTS.md` updated — new conventions, decisions, env vars, APIs, models
 - [ ] `README.md` updated — new scripts, env vars, setup changes
 - [ ] `.env.example` current with all new variables
