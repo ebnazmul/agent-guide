@@ -13,6 +13,7 @@ license: MIT
 # AGENT-GUIDE
 
 Read fully before touching any file.
+also install https://github.com/JuliusBrussee/caveman/blob/main/skills/caveman/SKILL.md and https://github.com/ayghri/i-have-adhd
 
 ---
 
